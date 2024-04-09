@@ -71,12 +71,132 @@ class Task
 			}
 		}
 };
+const char delimiter = char(134);
+// Function to save tasks to a file
+void saveTasksToFile(const std::vector<Task>& tasks, const std::string& filename)
+{
+	std::ofstream file(filename);
+	if (!file)
+	{
+		std::cerr << "Unable to open the file " << filename << std::endl;
+		return;
+	}
+
+	for (const auto& task : tasks)
+	{
+		file << "Nazwa: " << task.name << "\n";
+		file << "Opis: " << task.description << "\n";
+		file << "Deadline: " << task.deadline << "\n";
+
+		file << "Tagi: ";
+		if (!task.tags.empty()) {
+			file << task.tags[0];
+			for (size_t i = 1; i < task.tags.size(); ++i)
+				file << delimiter << task.tags[i];
+		}
+		file << "\n";
+
+		file << "Przypisani: ";
+		if (!task.assigned.empty()) {
+			file << task.assigned[0];
+			for (size_t i = 1; i < task.assigned.size(); ++i)
+				file << delimiter << task.assigned[i];
+		}
+		file << "\n";
+
+		file << "Status: ";
+		switch (task.status)
+		{
+		case Do_zrobienia:
+			file << "Do zrobienia";
+			break;
+		case W_trakcie:
+			file << "W trakcie";
+			break;
+		case Zrobione:
+			file << "Zrobione";
+			break;
+		}
+		file << "\n\n";
+	}
+
+	file.close();
+}
+
+
+
+// Function to load tasks from a file
+std::vector<Task> loadTasksFromFile(const std::string& filename)
+{
+	std::vector<Task> tasks;
+
+	std::ifstream file(filename);
+	if (!file)
+	{
+		std::cerr << "Unable to open the file " << filename << std::endl;
+		return tasks;
+	}
+
+	std::string line;
+	TaskStatus status;
+
+	while (std::getline(file, line))
+	{
+		if (line.find("Nazwa: ") == 0)
+		{
+			std::string name = line.substr(7);
+			std::string description, deadline;
+			std::vector<std::string> tags, assigned;
+
+			for (int i = 0; i < 5; ++i)
+			{
+				std::getline(file, line);
+				if (line.find("Opis: ") == 0)
+					description = line.substr(6);
+				else if (line.find("Deadline: ") == 0)
+					deadline = line.substr(10);
+				else if (line.find("Tagi: ") == 0)
+				{
+					std::stringstream ss(line.substr(6));
+					std::string tag;
+					while (std::getline(ss, tag, delimiter))
+						tags.push_back(tag);
+				}
+				else if (line.find("Przypisani: ") == 0)
+				{
+					std::stringstream ss(line.substr(12));
+					std::string assignee;
+					while (std::getline(ss, assignee, delimiter))
+						assigned.push_back(assignee);
+				}
+				else if (line.find("Status: ") == 0)
+				{
+					std::string statusStr = line.substr(8);
+					if (statusStr == "Do zrobienia")
+						status = Do_zrobienia;
+					else if (statusStr == "W trakcie")
+						status = W_trakcie;
+					else if (statusStr == "Zrobione")
+						status = Zrobione;
+				}
+			}
+
+			tasks.emplace_back(name, description, deadline, tags, assigned, status);
+		}
+	}
+
+	file.close();
+
+	return tasks;
+}
+
+
 
 int main()
 {
 	setlocale(LC_ALL, "PL");
 	bool empty, sameName, found, exit=0, quit = 0;
-	std::vector<Task> tasks;
+	std::vector<Task> tasks = loadTasksFromFile("tasks.txt");;
 
 
 	std::string name;
@@ -338,6 +458,8 @@ int main()
 				}
 				break;
 			case 'q':
+				saveTasksToFile(tasks, "tasks.txt");
+				std::cout << "Zapisano zmiany i zakończono program" << std::endl;
 				quit = 1;
 				break;
 			default:
