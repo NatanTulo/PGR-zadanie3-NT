@@ -71,14 +71,14 @@ class Task
 			}
 		}
 };
+
 const char delimiter = char(134);
-// Function to save tasks to a file
 void saveTasksToFile(const std::vector<Task>& tasks, const std::string& filename)
 {
 	std::ofstream file(filename);
 	if (!file)
 	{
-		std::cerr << "Unable to open the file " << filename << std::endl;
+		std::cerr << "Nie można otworzyć pliku " << filename << std::endl;
 		return;
 	}
 
@@ -123,9 +123,6 @@ void saveTasksToFile(const std::vector<Task>& tasks, const std::string& filename
 	file.close();
 }
 
-
-
-// Function to load tasks from a file
 std::vector<Task> loadTasksFromFile(const std::string& filename)
 {
 	std::vector<Task> tasks;
@@ -133,7 +130,7 @@ std::vector<Task> loadTasksFromFile(const std::string& filename)
 	std::ifstream file(filename);
 	if (!file)
 	{
-		std::cerr << "Unable to open the file " << filename << std::endl;
+		std::cerr << "Nie można otworzyć pliku " << filename << std::endl;
 		return tasks;
 	}
 
@@ -184,20 +181,17 @@ std::vector<Task> loadTasksFromFile(const std::string& filename)
 			tasks.emplace_back(name, description, deadline, tags, assigned, status);
 		}
 	}
-
+	std::cout << "Pomyślnie wczytano " << tasks.size() << " zadań" << std::endl;
 	file.close();
 
 	return tasks;
 }
 
-
-
 int main()
 {
 	setlocale(LC_ALL, "PL");
 	bool empty, sameName, found, exit=0, quit = 0;
-	std::vector<Task> tasks = loadTasksFromFile("tasks.txt");;
-
+	std::vector<Task> tasks = loadTasksFromFile("tasks.txt");
 
 	std::string name;
 	std::string description;
@@ -215,7 +209,6 @@ int main()
 		std::cout << "2 - Dodaj zadanie" << std::endl;
 		std::cout << "3 - Usuń zadanie" << std::endl;		
 		std::cout << "4 - Edytuj zadanie" << std::endl;
-
 		std::cout << "q - Wyjdź" << std::endl;
 		std::cout << "Naciśnij dowolny inny klawisz aby wyczyścić obraz i przywrócić menu" << std::endl << std::endl;
 		char input = _getch();
@@ -431,13 +424,13 @@ int main()
 								switch (newstatus)
 								{
 								case '1':
-									tasks[i].status = Do_zrobienia;
+									tasks[i].changeStatus(Do_zrobienia);
 									break;
 								case '2':
-									tasks[i].status = W_trakcie;
+									tasks[i].changeStatus(W_trakcie);
 									break;
 								case '3':
-									tasks[i].status = Zrobione;
+									tasks[i].changeStatus(Zrobione);
 									break;
 								default:
 									break;
