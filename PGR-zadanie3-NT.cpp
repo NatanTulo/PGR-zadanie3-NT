@@ -209,7 +209,7 @@ int main()
 		std::cout << "2 - Dodaj zadanie" << std::endl;
 		std::cout << "3 - Usuń zadanie" << std::endl;		
 		std::cout << "4 - Edytuj zadanie" << std::endl;
-		std::cout << "q - Wyjdź" << std::endl;
+		std::cout << "q - Zapisz i wyjdź" << std::endl;
 		std::cout << "Naciśnij dowolny inny klawisz aby wyczyścić obraz i przywrócić menu" << std::endl << std::endl;
 		char input = _getch();
 		system("cls");
